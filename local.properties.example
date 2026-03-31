@@ -1,0 +1,16 @@
+properties
+# This file is machine-specific and should NOT be committed to version control
+# Copy to local.properties and update paths for your system
+
+# SDK location
+sdk.dir=/Users/username/Library/Android/sdk
+# or on Windows:
+# sdk.dir=C:\\Users\\username\\AppData\\Local\\Android\\Sdk
+
+# NDK location (optional, will use default if not set)
+ndk.dir=/Users/username/Library/Android/sdk/ndk/26.1.10909125
+
+# Go path (for gomobile)
+go.path=/usr/local/go/bin/go
+# or on Windows:
+# go.path=C:\\Program Files\\Go\\bin\\go.exe
