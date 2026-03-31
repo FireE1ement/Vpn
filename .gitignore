@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+
+# Android
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# Go
+*.aar
+app/libs/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
