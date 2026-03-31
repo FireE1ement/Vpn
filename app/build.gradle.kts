@@ -20,28 +20,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        
-        // NDK configuration for Go bindings
-        externalNativeBuild {
-            cmake {
-                cppFlags += "-std=c++17"
-            }
-        }
-        
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
-        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false  // Изменено: отключено для простоты
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Sign with debug key for now
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
@@ -72,17 +60,10 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-        jniLibs {
-            useLegacyPackaging = true
-        }
     }
     
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
+    // УБРАНО: externalNativeBuild - NDK не нужен для Go/gomobile
+    // Go core собирается отдельно через Makefile
 }
 
 dependencies {
@@ -130,13 +111,8 @@ dependencies {
     // OkHttp for network operations
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     
-    // YAML parsing for Clash configs
-    implementation("org.yaml:snakeyaml:2.2")
-    
-    // QR Code scanning (for importing configs)
-    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    
     // Go Mobile bindings (AAR from core module)
+    // Сначала соберите core.aar через make android в папке core
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar", "*.jar"))))
     
     // Testing
@@ -146,30 +122,4 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-}
-
-// Task to build Go core and copy AAR to app/libs
-tasks.register<Exec>("buildGoCore") {
-    group = "build"
-    description = "Build Go core library using gomobile"
-    
-    workingDir = file("../core")
-    
-    // Ensure gomobile is installed
-    commandLine("go", "install", "golang.org/x/mobile/cmd/gomobile@latest")
-    
-    // Initialize gomobile
-    commandLine("gomobile", "init")
-    
-    // Build AAR
-    commandLine(
-        "gomobile", "bind",
-        "-target=android",
-        "-androidapi=26",
-        "-o", "../app/libs/core.aar",
-        "."
-    )
-    
-    // Make task depend on this
-    tasks.preBuild.dependsOn(this)
 }
